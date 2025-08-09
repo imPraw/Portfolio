@@ -270,62 +270,68 @@ body {
   position: relative;
 }
 
-.vinyl-record {
-  width: 300px;
-  height: 300px;
-  background: linear-gradient(45deg, #8b4513, #654321);
-  border-radius: 50%;
+.sound-waves {
+  width: 350px;
+  height: 200px;
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  gap: 15px;
   position: relative;
-  animation: rotate 10s linear infinite;
-  box-shadow: 0 20px 40px var(--shadow);
   cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 20px;
+}
+
+.sound-waves:hover {
+  transform: scale(1.05);
+}
+
+.wave {
+  width: 8px;
+  background: var(--gradient);
+  border-radius: 4px 4px 0 0;
+  animation: wave-animation 1.5s ease-in-out infinite;
   transition: all 0.3s ease;
 }
 
-.vinyl-record:hover {
-  transform: scale(1.05);
-  box-shadow: 0 25px 50px var(--shadow);
+.wave-1 { height: 40px; animation-delay: 0s; }
+.wave-2 { height: 80px; animation-delay: 0.1s; }
+.wave-3 { height: 120px; animation-delay: 0.2s; }
+.wave-4 { height: 80px; animation-delay: 0.3s; }
+.wave-5 { height: 60px; animation-delay: 0.4s; }
+
+.sound-waves:hover .wave {
+  animation-duration: 0.8s;
 }
 
-
-.record-hole {
+.collab-text {
   position: absolute;
-  top: 50%;
+  bottom: -10px;
   left: 50%;
-  transform: translate(-50%, -50%);
-  width: 50px;
-  height: 50px;
-  background: var(--bg-primary);
-  border-radius: 50%;
-}
-
-.record-label {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
+  transform: translateX(-50%);
   display: flex;
   align-items: center;
   justify-content: center;
+  background: var(--gradient);
   color: white;
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
+  padding: 8px 16px;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px var(--shadow);
   transition: all 0.3s ease;
 }
 
-.record-text {
+.collab-message {
   transition: opacity 0.3s ease;
 }
 
-.vinyl-record:hover .record-text {
+.sound-waves:hover .collab-message {
   opacity: 0;
 }
 
-.vinyl-record:hover .record-label::after {
+.sound-waves:hover .collab-text::after {
   content: 'Collab?';
   position: absolute;
   top: 50%;
@@ -333,7 +339,7 @@ body {
   transform: translate(-50%, -50%);
   color: white;
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   opacity: 1;
 }
 
@@ -407,10 +413,8 @@ section {
 }
 
 .about-content {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 4rem;
-  align-items: center;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .about-text h3 {
@@ -454,29 +458,6 @@ section {
   line-height: 1.8;
   color: var(--text-secondary);
 }
-
-.equalizer {
-  display: flex;
-  align-items: end;
-  gap: 8px;
-  height: 200px;
-  justify-content: center;
-}
-
-.bar {
-  width: 20px;
-  background: var(--gradient);
-  border-radius: 10px 10px 0 0;
-  animation: equalizer 1.5s ease-in-out infinite;
-}
-
-.bar:nth-child(1) { height: 60%; animation-delay: 0s; }
-.bar:nth-child(2) { height: 80%; animation-delay: 0.1s; }
-.bar:nth-child(3) { height: 40%; animation-delay: 0.2s; }
-.bar:nth-child(4) { height: 90%; animation-delay: 0.3s; }
-.bar:nth-child(5) { height: 70%; animation-delay: 0.4s; }
-.bar:nth-child(6) { height: 50%; animation-delay: 0.5s; }
-.bar:nth-child(7) { height: 85%; animation-delay: 0.6s; }
 
 /* Skills Section */
 .skills-grid {
@@ -793,6 +774,17 @@ section {
   to { transform: rotate(360deg); }
 }
 
+@keyframes wave-animation {
+  0%, 100% { 
+    height: var(--initial-height, 40px);
+    opacity: 0.7;
+  }
+  50% { 
+    height: calc(var(--initial-height, 40px) * 1.8);
+    opacity: 1;
+  }
+}
+
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-20px); }
@@ -861,17 +853,32 @@ section {
   
   .about-content,
   .contact-content {
-    grid-template-columns: 1fr;
-    gap: 2rem;
+    max-width: 100%;
   }
   
   .skills-grid {
     grid-template-columns: 1fr;
   }
   
-  .vinyl-record {
-    width: 200px;
-    height: 200px;
+  .sound-waves {
+    width: 280px;
+    height: 150px;
+    gap: 10px;
+  }
+  
+  .wave {
+    width: 6px;
+  }
+  
+  .wave-1 { height: 30px; }
+  .wave-2 { height: 60px; }
+  .wave-3 { height: 90px; }
+  .wave-4 { height: 60px; }
+  .wave-5 { height: 45px; }
+  
+  .collab-text {
+    font-size: 0.7rem;
+    padding: 6px 12px;
   }
   
   .container {

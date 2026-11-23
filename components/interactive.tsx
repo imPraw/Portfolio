@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent } from "react";
 import dynamic from "next/dynamic";
-import { Check, Command, Copy, FolderKanban, Layers, Mail, Moon, Search, Sun, UserRound, X } from "lucide-react";
+import { Check, Command, Copy, Layers, Mail, Moon, Search, Sun, UserRound, X } from "lucide-react";
 import { FaGithub } from "react-icons/fa6";
 import { archiveDescriptions, person, projects, sections, skillGroups } from "@/lib/content";
 import type { Repo } from "@/lib/github";
@@ -56,7 +56,7 @@ const commands = [
 const SkillMotion = dynamic(() => import("./skill-motion"), { ssr: false });
 const primaryLinks = [
   { href: "#about", label: "About", icon: UserRound },
-  { href: "#work", label: "Work", icon: FolderKanban },
+  { href: "#work", label: "Work", icon: Copy },
   { href: "#stack", label: "Stack", icon: Layers },
   { href: "#contact", label: "Contact", icon: Mail },
 ];

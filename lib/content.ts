@@ -13,7 +13,8 @@ export const sections = [
   { id: "about", label: "About" },
   { id: "stack", label: "Stack" },
   { id: "activity", label: "Activity" },
-  { id: "timeline", label: "Timeline" },
+  { id: "experience", label: "Experience" },
+  { id: "education", label: "Education" },
   { id: "more", label: "More work" },
   { id: "contact", label: "Contact" },
 ];
@@ -121,7 +122,10 @@ export const archiveDescriptions: Record<string, string> = {
   "Web-Development": "Coursework in browser-based web development.",
 };
 
-export const timeline = [
+export const experience = [
   { date: "Dec 2024 – Feb 2025", name: "Prixa Technologies", role: "Business Development Intern", description: "Researched markets, qualified leads, and worked with sales and technical teams on demos and client communication." },
+];
+
+export const education = [
   { date: "2024 – Present", name: "King’s College, Babarmahal", role: "Bachelor of Science in Computer Science", description: "Computer science studies in Kathmandu, Nepal." },
 ];

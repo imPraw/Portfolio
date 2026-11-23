@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import dynamic from "next/dynamic";
-import { Check, Command, Copy, FolderGit2, GitBranch, Moon, Search, Sun, X } from "lucide-react";
+import { Check, Command, Copy, Moon, Search, Sun, X } from "lucide-react";
+import { FaGithub } from "react-icons/fa6";
 import { archiveDescriptions, person, projects, sections, skillGroups } from "@/lib/content";
 import type { Repo } from "@/lib/github";
 
@@ -107,7 +108,7 @@ export function Controls() {
                     target.tabIndex = -1;
                     target.focus({ preventScroll: true });
                   }
-                }}>{command.name}</a>
+                }}>{command.href === person.github && <FaGithub size={16} aria-hidden="true" />}{command.name}</a>
               </li>
             ))}
           </ul>
@@ -141,7 +142,7 @@ export function SkillExplorer() {
         <div ref={panel}>
           <h3>{group.name}</h3><p className="muted">{group.intro}</p>
           <ul className="skill-chips">{group.skills.map((skill) => <li key={skill}>{skill}</li>)}</ul>
-          <a className="text-link" href={`${person.github}/${group.repo}`}><GitBranch size={16} /> See it in code</a>
+          <a className="text-link" href={`${person.github}/${group.repo}`}><FaGithub size={16} aria-hidden="true" /> See it in code</a>
         </div>
         {selection !== null && <SkillMotion panel={panel} selected={selected} />}
       </div>
@@ -180,7 +181,7 @@ export function RepositoryArchive({ repos }: { repos: Repo[] }) {
         {filtered.map((repo) => (
           <li key={repo.name}>
             <a href={repo.url} className="archive-card">
-              <div><FolderGit2 size={17} aria-hidden="true" /><h3>{repo.name}</h3></div>
+              <div><FaGithub size={17} aria-hidden="true" /><h3>{repo.name}</h3></div>
               <p>{archiveDescriptions[repo.name] ?? repo.description ?? "Public GitHub repository."}</p>
               {repo.language && <span>{repo.language}</span>}
             </a>

@@ -39,7 +39,7 @@ a { text-decoration: none; }
 a, button, input, select, summary, [tabindex] { outline-offset: 5px; }
 :focus-visible { outline: 2px solid var(--accent); }
 ::selection { color: #211333; background: #d7baff; }
-[id] { scroll-margin-top: 104px; }
+main[id], main section[id], main article[id] { scroll-margin-top: 104px; }
 img { display: block; }
 .shell { width: min(100% - clamp(36px, 10vw, 152px), 1240px); margin-inline: auto; }
 .section { padding-block: clamp(70px, 11vw, 155px); }
@@ -226,6 +226,8 @@ rect.calendar-cell:hover { stroke: var(--accent); }
 .events time { display: block; color: var(--subtle); font-size: .78rem; }
 .data-note, .archive-count { color: var(--subtle); font: 500 .76rem/1.5 var(--mono); margin-top: 14px; }
 
+.background-section { padding-block: clamp(58px, 8vw, 104px); }
+.background-section h2 { margin-top: 0; }
 .timeline { list-style: none; padding: 0; margin: 0; }
 .timeline li { display: grid; grid-template-columns: 1fr 2.5fr; gap: clamp(10px, 4vw, 40px); padding-block: 26px; border-block-start: 1px solid var(--line); }
 .timeline li:last-child { border-block-end: 1px solid var(--line); }
@@ -268,7 +270,7 @@ rect.calendar-cell:hover { stroke: var(--accent); }
 .palette-input { display: flex; align-items: center; gap: 11px; padding: 8px 11px 8px 16px; border-bottom: 1px solid var(--line); }
 .palette input { width: 100%; min-height: 44px; }
 .palette-results { min-height: 0; overflow: auto; padding: 8px; margin: 0; list-style: none; }
-.palette-results a { display: block; padding: 11px 13px; border-radius: 8px; font-size: .92rem; }
+.palette-results a { display: flex; align-items: center; gap: 8px; padding: 11px 13px; border-radius: 8px; font-size: .92rem; }
 .palette-results a:is(:hover, .active) { background: var(--panel-hover); color: var(--accent); }
 .palette-results a:focus-visible { outline-offset: -2px; }
 .palette-empty { padding: 16px; color: var(--muted); }

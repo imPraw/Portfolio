@@ -1,4 +1,5 @@
-import { GitFork, GitPullRequest, GitBranch } from "lucide-react";
+import { GitFork, GitPullRequest } from "lucide-react";
+import { FaGithub } from "react-icons/fa6";
 import { person } from "@/lib/content";
 import { dateLabel, getGitHubData, type Day } from "@/lib/github";
 
@@ -76,7 +77,7 @@ export function Activity({ data }: { data: Awaited<ReturnType<typeof getGitHubDa
   return (
     <section className="section shell" id="activity" aria-labelledby="activity-title">
       <div className="section-head" data-reveal>
-        <p className="label"><GitBranch size={15} /> GitHub activity</p>
+        <p className="label"><FaGithub size={15} aria-hidden="true" /> GitHub activity</p>
         <h2 id="activity-title">In the open.</h2>
       </div>
       <div className="activity-grid">
@@ -95,7 +96,7 @@ export function Activity({ data }: { data: Awaited<ReturnType<typeof getGitHubDa
               <GitFork size={16} /><div><span>{eventNames[event.type] ?? "Public activity in"}</span> <a href={event.url}>{event.repo}</a><time dateTime={event.date}>{dateLabel(event.date)}</time></div>
             </li>
           ))}</ul> : <p className="muted">No recent public events.</p>}
-          <a className="text-link" href={person.github}>View GitHub profile</a>
+          <a className="text-link" href={person.github}><FaGithub size={15} aria-hidden="true" /> View GitHub profile</a>
         </div>
       </div>
       {data.fallback && <p className="data-note">Some GitHub data uses the saved snapshot from {dateLabel(data.snapshotDate)}.</p>}

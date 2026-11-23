@@ -37,7 +37,7 @@ Copy `.env.example` to `.env.local` to configure optional settings.
 
 ## Update content
 
-- Edit `lib/content.ts` for the featured projects, skills, timeline, social links, and archive descriptions. Add a project’s verified public URL as `demoUrl` to show its Live demo button.
+- Edit `lib/content.ts` for the featured projects, skills, experience, education, social links, and archive descriptions. Add a project’s verified public URL as `demoUrl` to show its Live demo button.
 - Edit `components/project-art.tsx` and `public/media` for new project imagery. Agent, Insurance, and Chess have labeled illustrations. Glasswave includes an alternate-style study and the original local capture.
 - The home page prerenders with public GitHub repository data, language bytes, events, and contribution counts. Next.js revalidates after 24 hours on traffic. If a request fails or the calendar markup changes, the affected data falls back to `lib/github-snapshot.json` and the activity section displays the snapshot date.
 - Replace the desktop and mobile hero crops, About portrait, and generated social card together when updating the portrait. Theme and layout tokens are in `app/globals.css`.

@@ -1,10 +1,11 @@
 import Image, { getImageProps } from "next/image";
-import { ArrowDown, ArrowUp, BriefcaseBusiness, Camera, GitBranch, Globe, GraduationCap, Mail, Star, Terminal } from "lucide-react";
+import { ArrowDown, ArrowUp, Globe, Mail, Star, Terminal } from "lucide-react";
+import { FaGithub, FaInstagram, FaLinkedin } from "react-icons/fa6";
 import { Activity } from "@/components/activity";
 import { ProjectArt } from "@/components/project-art";
 import { Controls, CopyEmail, RepositoryArchive, SkillExplorer } from "@/components/interactive";
 import { MotionLoader } from "@/components/motion-loader";
-import { person, projects, timeline } from "@/lib/content";
+import { education, experience, person, projects } from "@/lib/content";
 import { getGitHubData } from "@/lib/github";
 import { getSiteUrl } from "@/lib/site-url";
 
@@ -20,6 +21,23 @@ const heroImage = {
 } as const;
 const { props: heroDesktop } = getImageProps({ ...heroImage, src: "/media/eclipse.webp", sizes: "(max-width: 850px) 155vw, 100vw" });
 const mobileHeroSizes = "(max-width: 400px) 430px, 520px";
+
+function BackgroundSection({ id, title, entries }: { id: string; title: string; entries: typeof experience }) {
+  const heading = `${id}-title`;
+  return (
+    <section className="section shell background-section" id={id} aria-labelledby={heading}>
+      <div className="section-head" data-reveal><h2 id={heading}>{title}</h2></div>
+      <ol className="timeline">
+        {entries.map((item) => (
+          <li key={item.name}>
+            <span className="label">{item.date}</span>
+            <div><h3>{item.name}</h3><p>{item.role}</p><p className="muted">{item.description}</p></div>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
 
 export default async function Home() {
   const data = await getGitHubData();
@@ -56,7 +74,7 @@ export default async function Home() {
               <p className="hero-intro hero-enter">I’m Praw, a computer science student building practical automation and thoughtfully designed software.</p>
               <div className="hero-actions hero-enter">
                 <a className="button primary" data-magnetic href="#work">Explore my work <ArrowDown size={16} aria-hidden="true" /></a>
-                <a className="button hero-secondary" href={person.github}><GitBranch size={17} aria-hidden="true" /> GitHub</a>
+                <a className="button hero-secondary" href={person.github}><FaGithub size={17} aria-hidden="true" /> GitHub</a>
               </div>
             </div>
             <a className="hero-scroll" href="#about"><ArrowDown size={16} aria-hidden="true" /> Scroll to explore</a>
@@ -99,7 +117,7 @@ export default async function Home() {
                   <ul className="chips" aria-label="Technologies">{project.stack.map((tech) => <li key={tech}>{tech}</li>)}</ul>
                   <div className="project-actions">
                     {project.demoUrl && <a className="button primary" href={project.demoUrl}><Globe size={16} /> Live demo</a>}
-                    <a className="button secondary" href={url}><GitBranch size={16} /> GitHub</a>
+                    <a className="button secondary" href={url}><FaGithub size={16} aria-hidden="true" /> GitHub</a>
                     {repo && <span className="repo-stat"><Star size={14} /> {repo.stars} {repo.stars === 1 ? "star" : "stars"}{repo.language && ` · ${repo.language}`}</span>}
                   </div>
                   <details className="source">
@@ -121,14 +139,8 @@ export default async function Home() {
 
         <Activity data={data} />
 
-        <section className="section shell" id="timeline" aria-labelledby="timeline-title">
-          <div className="section-head" data-reveal><p className="label"><GraduationCap size={16} /> Experience & education</p><h2 id="timeline-title">Where I’ve learned.</h2></div>
-          <ol className="timeline">
-            {timeline.map((item) => (
-              <li key={item.name}><span className="label">{item.date}</span><div><h3>{item.name}</h3><p>{item.role}</p><p className="muted">{item.description}</p></div></li>
-            ))}
-          </ol>
-        </section>
+        <BackgroundSection id="experience" title="Experience." entries={experience} />
+        <BackgroundSection id="education" title="Education." entries={education} />
 
         <section className="section shell" id="more" aria-labelledby="archive-title">
           <div className="section-head" data-reveal><p className="label">Repository archive</p><h2 id="archive-title">More work.</h2></div>
@@ -141,7 +153,11 @@ export default async function Home() {
             <h2 id="contact-title" data-reveal>Let’s build<br />something.</h2>
             <p>Have a project in mind or something interesting to share? I’d like to hear from you.</p>
             <div className="contact-actions"><a className="button primary" data-magnetic href={`mailto:${person.email}`}>{person.email}</a><CopyEmail /></div>
-            <div className="socials"><a href={person.github}><GitBranch size={17} /> GitHub</a><a href={person.linkedin}><BriefcaseBusiness size={17} /> LinkedIn</a><a href={person.instagram}><Camera size={17} /> Instagram</a></div>
+            <div className="socials">
+              <a href={person.github}><FaGithub size={17} aria-hidden="true" /> GitHub</a>
+              <a href={person.linkedin}><FaLinkedin size={17} aria-hidden="true" /> LinkedIn</a>
+              <a href={person.instagram}><FaInstagram size={17} aria-hidden="true" /> Instagram</a>
+            </div>
           </div>
         </section>
       </main>

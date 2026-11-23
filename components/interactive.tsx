@@ -1,19 +1,65 @@
 "use client";
 
-import { useEffect, useRef, useState, type KeyboardEvent } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent } from "react";
 import dynamic from "next/dynamic";
-import { Check, Command, Copy, Moon, Search, Sun, X } from "lucide-react";
+import { Check, Command, Copy, FolderKanban, Layers, Mail, Moon, Search, Sun, UserRound, X } from "lucide-react";
 import { FaGithub } from "react-icons/fa6";
 import { archiveDescriptions, person, projects, sections, skillGroups } from "@/lib/content";
 import type { Repo } from "@/lib/github";
+
+const recipient = encodeURIComponent(person.email);
+const gmailComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${recipient}`;
+const gmailLink = { href: gmailComposeUrl, target: "_blank", rel: "noopener noreferrer" };
+
+function openGmailApp(event: MouseEvent<HTMLAnchorElement>) {
+  if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+
+  const { userAgent, platform, maxTouchPoints } = navigator;
+  if (/Android/.test(userAgent) && /(?:Chrome|Chromium)\//.test(userAgent)) {
+    event.preventDefault();
+    const fallback = encodeURIComponent(gmailComposeUrl);
+    window.location.assign(`intent:${recipient}#Intent;scheme=mailto;action=android.intent.action.SENDTO;package=com.google.android.gm;S.browser_fallback_url=${fallback};end`);
+    return;
+  }
+
+  const isAppleMobile = /iPhone|iPad|iPod/.test(userAgent) || (platform === "MacIntel" && maxTouchPoints > 1);
+  if (!isAppleMobile) return;
+
+  event.preventDefault();
+  // Cancel the web fallback when handing off to the Gmail app hides the page.
+  const listeners = new AbortController();
+  const timer = window.setTimeout(() => {
+    cancelFallback();
+    if (!document.hidden) window.location.assign(gmailComposeUrl);
+  }, 1800);
+  function cancelFallback() {
+    window.clearTimeout(timer);
+    listeners.abort();
+  }
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) cancelFallback();
+  }, { signal: listeners.signal });
+  window.addEventListener("pagehide", cancelFallback, { signal: listeners.signal });
+  window.location.assign(`googlegmail:///co?to=${recipient}`);
+}
+
+export function EmailLink() {
+  return <a className="button primary" data-magnetic {...gmailLink} onClick={openGmailApp}>{person.email}</a>;
+}
 
 const commands = [
   ...sections.map((section) => ({ name: section.label, href: `#${section.id}` })),
   ...projects.map((project) => ({ name: project.name, href: `#${project.id}` })),
   { name: "GitHub profile", href: person.github },
-  { name: "Email Praw", href: `mailto:${person.email}` },
+  { name: "Email Praw", href: gmailComposeUrl },
 ];
 const SkillMotion = dynamic(() => import("./skill-motion"), { ssr: false });
+const primaryLinks = [
+  { href: "#about", label: "About", icon: UserRound },
+  { href: "#work", label: "Work", icon: FolderKanban },
+  { href: "#stack", label: "Stack", icon: Layers },
+  { href: "#contact", label: "Contact", icon: Mail },
+];
 
 export function Controls() {
   const [light, setLight] = useState(false);
@@ -73,7 +119,9 @@ export function Controls() {
         <nav className="nav-shell" aria-label="Main navigation">
           <a className="wordmark" href="#top" aria-label="Praw, home">praw<span>.</span></a>
           <div className="nav-links">
-            <a href="#about">About</a><a href="#work">Work</a><a href="#stack">Stack</a><a href="#contact">Contact</a>
+            {primaryLinks.map(({ href, label, icon: Icon }) => (
+              <a key={href} href={href} aria-label={label} title={label}><Icon size={18} aria-hidden="true" /><span>{label}</span></a>
+            ))}
           </div>
           <div className="nav-actions">
             <button className="icon-button palette-trigger" type="button" onClick={openPalette} aria-label="Open command palette" aria-keyshortcuts="Control+k Meta+k" title="Command palette">
@@ -96,9 +144,10 @@ export function Controls() {
           <ul className="palette-results" data-lenis-prevent>
             {commandList.map((command, index) => (
               <li key={command.href}>
-                <a id={`command-${index}`} className={index === active ? "active" : ""} href={command.href} onClick={() => {
+                <a id={`command-${index}`} className={index === active ? "active" : ""} href={command.href} {...(command.href === gmailComposeUrl ? gmailLink : {})} onClick={(event) => {
                   if (!command.href.startsWith("#")) {
                     dialog.current?.close();
+                    if (command.href === gmailComposeUrl) openGmailApp(event);
                     return;
                   }
                   opener.current = null;

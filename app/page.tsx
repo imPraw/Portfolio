@@ -3,7 +3,7 @@ import { ArrowDown, ArrowUp, Globe, Mail, Star, Terminal } from "lucide-react";
 import { FaGithub, FaInstagram, FaLinkedin } from "react-icons/fa6";
 import { Activity } from "@/components/activity";
 import { ProjectArt } from "@/components/project-art";
-import { Controls, CopyEmail, RepositoryArchive, SkillExplorer } from "@/components/interactive";
+import { Controls, CopyEmail, EmailLink, RepositoryArchive, SkillExplorer } from "@/components/interactive";
 import { MotionLoader } from "@/components/motion-loader";
 import { education, experience, person, projects } from "@/lib/content";
 import { getGitHubData } from "@/lib/github";
@@ -152,7 +152,7 @@ export default async function Home() {
             <p className="label"><Mail size={16} /> Get in touch</p>
             <h2 id="contact-title" data-reveal>Let’s build<br />something.</h2>
             <p>Have a project in mind or something interesting to share? I’d like to hear from you.</p>
-            <div className="contact-actions"><a className="button primary" data-magnetic href={`mailto:${person.email}`}>{person.email}</a><CopyEmail /></div>
+            <div className="contact-actions"><EmailLink /><CopyEmail /></div>
             <div className="socials">
               <a href={person.github}><FaGithub size={17} aria-hidden="true" /> GitHub</a>
               <a href={person.linkedin}><FaLinkedin size={17} aria-hidden="true" /> LinkedIn</a>

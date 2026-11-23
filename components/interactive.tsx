@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
+import dynamic from "next/dynamic";
 import { Check, Command, Copy, FolderGit2, GitBranch, Moon, Search, Sun, X } from "lucide-react";
-import { LazyMotion, domAnimation, m, useReducedMotion } from "motion/react";
 import { archiveDescriptions, person, projects, sections, skillGroups } from "@/lib/content";
 import type { Repo } from "@/lib/github";
 
@@ -12,6 +12,7 @@ const commands = [
   { name: "GitHub profile", href: person.github },
   { name: "Email Praw", href: `mailto:${person.email}` },
 ];
+const SkillMotion = dynamic(() => import("./skill-motion"), { ssr: false });
 
 export function Controls() {
   const [light, setLight] = useState(false);
@@ -119,8 +120,9 @@ export function Controls() {
 }
 
 export function SkillExplorer() {
-  const [selected, setSelected] = useState(0);
-  const reduced = useReducedMotion();
+  const [selection, setSelected] = useState<number | null>(null);
+  const selected = selection ?? 0;
+  const panel = useRef<HTMLDivElement>(null);
   const group = skillGroups[selected];
   return (
     <div className="skill-explorer">
@@ -136,13 +138,12 @@ export function SkillExplorer() {
         ))}
       </div>
       <div id="skill-panel" className="skill-panel" role="tabpanel" aria-labelledby={`skill-${selected}`} tabIndex={0}>
-        <LazyMotion features={domAnimation}>
-          <m.div key={group.name} initial={reduced ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}>
-            <h3>{group.name}</h3><p className="muted">{group.intro}</p>
-            <ul className="skill-chips">{group.skills.map((skill) => <li key={skill}>{skill}</li>)}</ul>
-            <a className="text-link" href={`${person.github}/${group.repo}`}><GitBranch size={16} /> See it in code</a>
-          </m.div>
-        </LazyMotion>
+        <div ref={panel}>
+          <h3>{group.name}</h3><p className="muted">{group.intro}</p>
+          <ul className="skill-chips">{group.skills.map((skill) => <li key={skill}>{skill}</li>)}</ul>
+          <a className="text-link" href={`${person.github}/${group.repo}`}><GitBranch size={16} /> See it in code</a>
+        </div>
+        {selection !== null && <SkillMotion panel={panel} selected={selected} />}
       </div>
     </div>
   );

@@ -84,7 +84,7 @@ export function startMotion() {
       function reset() { moveX(0); moveY(0); }
       button.addEventListener("pointermove", move, { passive: true });
       button.addEventListener("pointerleave", reset);
-        return () => {
+      return () => {
         button.removeEventListener("pointermove", move);
         button.removeEventListener("pointerleave", reset);
         gsap.set(button, { clearProps: "transform" });

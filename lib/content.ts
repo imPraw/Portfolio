@@ -18,7 +18,21 @@ export const sections = [
   { id: "contact", label: "Contact" },
 ];
 
-export const projects = [
+export type Project = {
+  id: "agent" | "insurance" | "glass" | "chess";
+  repo: string;
+  name: string;
+  discipline: string;
+  headline: string;
+  problem: string;
+  solution: string;
+  stack: readonly string[];
+  file: string;
+  snippet: string;
+  demoUrl?: string;
+};
+
+export const projects: Project[] = [
   {
     id: "agent",
     repo: "praw-s-agent",
@@ -67,9 +81,7 @@ export const projects = [
     file: "chess.py",
     snippet: "def pos_to_index(pos):\n    col = ord(pos[0]) - ord('a')\n    row = 8 - int(pos[1])\n    return row, col",
   },
-] as const;
-
-export type Project = (typeof projects)[number];
+];
 
 export const skillGroups = [
   {

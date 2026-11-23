@@ -17,7 +17,7 @@ The six pins are Agent, Insurance, Glasswave, Portfolio, Simple Banking System, 
 
 ## Previous portfolio
 
-The [existing deployment](https://portfolio-six-orcin-32.vercel.app) returned 404. Source inspection found a clear section hierarchy, theme persistence, and a dedicated mobile menu. The generic greeting, percentage-based skill presentation, and equal emphasis on sections leave little room for project storytelling. Performance could not be measured against the unavailable deployment.
+The [existing deployment](https://portfolio-six-orcin-32.vercel.app) returned 404. Source inspection found a clear section hierarchy, theme persistence, and a dedicated mobile menu. The generic greeting, emoji-led skill cards, and equal emphasis on sections leave little room for project storytelling. Performance could not be measured against the unavailable deployment.
 
 ## Inputs to verify
 

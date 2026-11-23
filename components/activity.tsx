@@ -1,11 +1,27 @@
 import { GitFork, GitPullRequest, GitBranch } from "lucide-react";
-import { Fragment } from "react";
 import { person } from "@/lib/content";
 import { dateLabel, getGitHubData, type Day } from "@/lib/github";
 
 function Calendar({ days }: { days: Day[] }) {
   const offset = days.length ? new Date(`${days[0][0]}T00:00:00Z`).getUTCDay() : 0;
+  const pitch = 14;
+  const totalSlots = days.length + offset;
+  const width = Math.ceil(totalSlots / 7) * pitch;
+  const fullWeeksEnd = Math.floor(totalSlots / 7) * pitch;
+  const fullWeeksStart = offset ? pitch : 0;
+  const months: { x: number; name: string }[] = [];
+  const activeDays: { date: string; count: number; level: number; x: number; y: number }[] = [];
   const contributions = days.reduce((total, [, , count]) => total + count, 0);
+
+  days.forEach(([date, level, count], i) => {
+    const x = Math.floor((i + offset) / 7) * pitch;
+    const y = (i + offset) % 7 * pitch + 18;
+    const day = new Date(`${date}T00:00:00Z`);
+    if (day.getUTCDate() === 1 && x > pitch && x < width - 24) {
+      months.push({ x, name: day.toLocaleDateString("en", { month: "short", timeZone: "UTC" }) });
+    }
+    if (count > 0) activeDays.push({ date, count, level, x, y });
+  });
   return (
     <div className="calendar">
       <div className="panel-heading">
@@ -13,23 +29,32 @@ function Calendar({ days }: { days: Day[] }) {
         <span className="label"><strong data-counter={contributions}>{contributions}</strong> contributions</span>
       </div>
       <div className="calendar-scroll" tabIndex={0} role="region" aria-label="Scrollable contribution calendar" data-lenis-prevent>
-        <div className="calendar-grid" style={{ gridTemplateColumns: `repeat(${Math.ceil((days.length + offset) / 7)}, minmax(7px, 1fr))` }}>
-          {days.map(([date, level, count], i) => {
-            const column = Math.floor((i + offset) / 7) + 1;
-            const day = new Date(`${date}T00:00:00Z`);
-            const showMonth = day.getUTCDate() === 1 && column > 2;
-            return (
-              <Fragment key={date}>
-                {showMonth && <span className="calendar-month" style={{ gridColumn: column, gridRow: 1 }} aria-hidden="true">{day.toLocaleDateString("en", { month: "short", timeZone: "UTC" })}</span>}
-                <div className="calendar-cell-wrap" style={{ gridColumn: column, gridRow: (i + offset) % 7 + 2 }}>
-                  <span className="calendar-cell" data-level={level} title={`${dateLabel(date)}: ${count} ${count === 1 ? "contribution" : "contributions"}`} />
-                </div>
-              </Fragment>
-            );
-          })}
-        </div>
+        <svg className="calendar-grid" viewBox={`0 0 ${width} 116`} role="img" aria-label={`GitHub heatmap showing ${contributions} contributions in the past year`}>
+          <defs>
+            <pattern id="contribution-cells" patternUnits="userSpaceOnUse" y={18} width={pitch} height={pitch}>
+              <rect className="calendar-cell" width={11} height={11} rx={2} />
+            </pattern>
+          </defs>
+          {months.map(({ x, name }) => <text className="calendar-month" key={x} x={x} y={10}>{name}</text>)}
+          <g fill="url(#contribution-cells)">
+            {offset > 0 && <rect y={18 + offset * pitch} width={pitch} height={(7 - offset) * pitch} />}
+            <rect x={fullWeeksStart} y={18} width={fullWeeksEnd - fullWeeksStart} height={7 * pitch} />
+            {totalSlots % 7 > 0 && <rect x={fullWeeksEnd} y={18} width={pitch} height={totalSlots % 7 * pitch} />}
+          </g>
+          {activeDays.map(({ date, count, level, x, y }) => (
+            <rect className="calendar-cell" key={date} data-level={level} x={x} y={y} width={11} height={11} rx={2}>
+              <title>{`${dateLabel(date)} · ${count} ${count === 1 ? "contribution" : "contributions"}`}</title>
+            </rect>
+          ))}
+        </svg>
       </div>
       <div className="calendar-footer"><span>Past year · GitHub</span><span className="legend">Less {[0, 1, 2, 3, 4].map((level) => <i key={level} data-level={level} />)} More</span></div>
+      {activeDays.length > 0 && (
+        <details className="calendar-text">
+          <summary>Contribution dates</summary>
+          <ul>{activeDays.toReversed().map(({ date, count }) => <li key={date}><time dateTime={date}>{dateLabel(date)}</time><span>{count} {count === 1 ? "contribution" : "contributions"}</span></li>)}</ul>
+        </details>
+      )}
     </div>
   );
 }

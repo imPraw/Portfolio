@@ -1,5 +1,5 @@
 import Image, { getImageProps } from "next/image";
-import { ArrowDown, ArrowUp, GitBranch, GraduationCap, Camera, BriefcaseBusiness, Mail, Star, Terminal } from "lucide-react";
+import { ArrowDown, ArrowUp, BriefcaseBusiness, Camera, GitBranch, Globe, GraduationCap, Mail, Star, Terminal } from "lucide-react";
 import { Activity } from "@/components/activity";
 import { ProjectArt } from "@/components/project-art";
 import { Controls, CopyEmail, RepositoryArchive, SkillExplorer } from "@/components/interactive";
@@ -19,7 +19,7 @@ const heroImage = {
   loading: "eager",
 } as const;
 const { props: heroDesktop } = getImageProps({ ...heroImage, src: "/media/eclipse.webp", sizes: "(max-width: 850px) 155vw, 100vw" });
-const { props: heroMobile } = getImageProps({ ...heroImage, src: "/media/eclipse-mobile.webp", sizes: "75vh" });
+const mobileHeroSizes = "(max-width: 400px) 430px, 520px";
 
 export default async function Home() {
   const data = await getGitHubData();
@@ -44,8 +44,9 @@ export default async function Home() {
       <main id="main">
         <section id="top" className="hero" aria-labelledby="hero-title">
           <picture className="hero-visual" data-hero-art>
-            <source media="(max-width: 640px)" srcSet={heroMobile.srcSet} sizes={heroMobile.sizes} />
-            <img {...heroDesktop} />
+            <source media="(max-width: 640px)" type="image/avif" srcSet="/media/eclipse-mobile-small.avif 560w, /media/eclipse-mobile.avif 840w" sizes={mobileHeroSizes} />
+            <source media="(max-width: 640px)" type="image/webp" srcSet="/media/eclipse-mobile-small.webp 560w, /media/eclipse-mobile.webp 840w" sizes={mobileHeroSizes} />
+            <img {...heroDesktop} decoding="sync" />
           </picture>
           <div className="hero-shade" />
           <div className="shell hero-shell">
@@ -97,6 +98,7 @@ export default async function Home() {
                   <p className="muted">{project.solution}</p>
                   <ul className="chips" aria-label="Technologies">{project.stack.map((tech) => <li key={tech}>{tech}</li>)}</ul>
                   <div className="project-actions">
+                    {project.demoUrl && <a className="button primary" href={project.demoUrl}><Globe size={16} /> Live demo</a>}
                     <a className="button secondary" href={url}><GitBranch size={16} /> GitHub</a>
                     {repo && <span className="repo-stat"><Star size={14} /> {repo.stars} {repo.stars === 1 ? "star" : "stars"}{repo.language && ` · ${repo.language}`}</span>}
                   </div>

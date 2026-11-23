@@ -107,6 +107,7 @@ h2 { margin-top: 12px; font-size: clamp(2.7rem, 7.1vw, 6.7rem); font-weight: 610
 @keyframes hero-in { from { opacity: .25; transform: translateY(19px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes caret { 50% { opacity: .08; } }
 [data-skip-intro] .hero-enter { animation: none; }
+.hero:focus-within .hero-enter { animation: none; }
 
 .about { display: grid; grid-template-columns: 1.43fr .75fr; align-items: center; gap: clamp(30px, 8.4vw, 120px); }
 .about h2 { max-width: 780px; }

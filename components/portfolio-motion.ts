@@ -5,7 +5,7 @@ import Lenis from "lenis";
 export function startMotion() {
   gsap.registerPlugin(ScrollTrigger);
 
-  const lenis = new Lenis({ anchors: { offset: -88 }, duration: 0.95 });
+  const lenis = new Lenis({ anchors: true, duration: 0.95, stopInertiaOnNavigate: true });
   const tick = (time: number) => lenis.raf(time * 1000);
   lenis.on("scroll", ScrollTrigger.update);
   gsap.ticker.add(tick);
@@ -84,7 +84,7 @@ export function startMotion() {
       function reset() { moveX(0); moveY(0); }
       button.addEventListener("pointermove", move, { passive: true });
       button.addEventListener("pointerleave", reset);
-      return () => {
+        return () => {
         button.removeEventListener("pointermove", move);
         button.removeEventListener("pointerleave", reset);
         gsap.set(button, { clearProps: "transform" });

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import localFont from "next/font/local";
+import "lenis/dist/lenis.css";
 import { person } from "@/lib/content";
 import { getSiteUrl } from "@/lib/site-url";
 import "./globals.css";

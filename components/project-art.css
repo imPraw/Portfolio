@@ -1,0 +1,39 @@
+.project-art .art-canvas {
+  min-height: 0;
+  padding: clamp(1rem, 3vw, 2.75rem);
+}
+.project-art .art-kicker { letter-spacing: .065em; text-transform: uppercase; }
+.project-art figcaption { line-height: 1.6; }
+.agent-art .art-canvas {
+  background:
+    linear-gradient(#d3c0ff0d 1px, transparent 1px) center / 24px 24px,
+    linear-gradient(90deg, #d3c0ff0d 1px, transparent 1px) center / 24px 24px,
+    radial-gradient(ellipse at 72% 15%, #59467c, #251c38 80%);
+}
+.insurance-art .art-canvas { background: linear-gradient(140deg, #93aaa4, #425855); }
+.insurance-art .insurance-window { background: #f7faf8; border-color: #effbf68c; }
+.insurance-art .mock-titlebar { background: #173e35; border-color: #35594e; color: #f1f8f3; }
+.insurance-art .window-controls { color: #b2d5c8; }
+.insurance-art .insurance-screen { background: #f4f7f2; }
+.insurance-art .mock-sidebar { background: #e0e9e2; color: #3b6557; }
+.insurance-art .art-kicker { color: #526c61; }
+.insurance-art .mock-dashboard strong { color: #1a3129; }
+.insurance-art .mock-table { background: #fff; border-color: #c8d5cc; }
+.insurance-art .mock-table > div { color: #293d34; align-items: center; }
+.insurance-art .mock-table > div + div { border-color: #d9e1da; }
+.insurance-art .mock-table > div:first-child { background: #e5ece6; }
+.insurance-art .mock-table > div span:last-child { color: #365748; }
+.insurance-art .mock-table > div:last-child span:last-child { color: #21623a; font-weight: 650; }
+.chess-art .art-canvas { background: radial-gradient(ellipse at 20% 85%, #76503a, #382a29 85%); }
+.chess-art .mock-window { background: #231d1b; border-color: #cfb29e70; }
+.chess-art .mock-titlebar { background: #302724; color: #f8ede1; border-color: #9684784d; }
+.chess-art .chess-prompt, .chess-art .chess-prompt span, .chess-art .window-controls { color: #e4c7a7; }
+.chess-art .mock-board span { background: #6b564a; color: #fff7e9; }
+.chess-art .mock-board .tinted { background: #463b35; }
+.chess-art .mock-board [data-move] { background: #94724a; box-shadow: inset 0 0 0 1px #e9c684; }
+
+@media (max-width: 480px) {
+  .project-art .art-canvas { padding: .85rem; aspect-ratio: auto; min-height: 13.5rem; }
+  .chess-art .chess-screen { gap: .85rem; }
+  .chess-art .mock-board { flex: 0 0 55%; }
+}

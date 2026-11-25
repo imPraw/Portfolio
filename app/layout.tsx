@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import localFont from "next/font/local";
-import "lenis/dist/lenis.css";
 import { person } from "@/lib/content";
 import { getSiteUrl } from "@/lib/site-url";
 import "./globals.css";
@@ -11,11 +10,11 @@ const mono = localFont({ src: "./fonts/geist-mono.woff2", variable: "--font-mono
 
 export const metadata: Metadata = {
   metadataBase: getSiteUrl(),
-  title: "Praw — Pratyush Halwai",
+  title: "Pratyush Halwai (Praw) | Software Portfolio",
   description: person.description,
   alternates: { canonical: "/" },
   openGraph: {
-    title: "Praw — Pratyush Halwai",
+    title: "Pratyush Halwai (Praw) | Software Portfolio",
     description: person.description,
     url: "/",
     siteName: "Praw",
@@ -24,7 +23,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Praw — Pratyush Halwai",
+    title: "Pratyush Halwai (Praw) | Software Portfolio",
     description: person.description,
     images: ["/media/social.jpg"],
   },

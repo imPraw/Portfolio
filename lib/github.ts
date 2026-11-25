@@ -73,10 +73,20 @@ function parseCalendar(html: string): Day[] {
     [...html.matchAll(/for="(contribution-day-component-[^"]+)"[^>]*>(No|[\d,]+) contribution/g)]
       .map((match) => [match[1], Number(match[2].replaceAll(",", "")) || 0]),
   );
-  return [...html.matchAll(/<td\b[^>]*data-date="([^"]+)"[^>]*id="([^"]+)"[^>]*data-level="([0-4])"[^>]*>/g)]
-    .filter((match) => counts.has(match[2]))
-    .map<Day>((match) => [match[1], Number(match[3]), counts.get(match[2])!])
-    .sort((a, b) => a[0].localeCompare(b[0]));
+  const days: Day[] = [];
+  for (const [cell] of html.matchAll(/<td\b[^>]*>/g)) {
+    const date = /\bdata-date="(\d{4}-\d{2}-\d{2})"/.exec(cell)?.[1];
+    const id = /\bid="([^"]+)"/.exec(cell)?.[1];
+    const level = /\bdata-level="([0-4])"/.exec(cell)?.[1];
+    const count = id ? counts.get(id) : undefined;
+    if (date && level && count !== undefined) days.push([date, Number(level), count]);
+  }
+  days.sort((a, b) => a[0].localeCompare(b[0]));
+  // The chart positions each cell by its index. A missing day would shift every later week.
+  const dayMs = 86_400_000;
+  const fullYear = days.length >= 365 && days.length <= 371;
+  return fullYear && days.every(([date], i) => i === 0 || Date.parse(date) - Date.parse(days[i - 1][0]) === dayMs)
+    ? days : [];
 }
 
 export async function getGitHubData() {
@@ -107,14 +117,20 @@ export async function getGitHubData() {
     }
     languages = [...totals.entries()].sort((a, b) => b[1] - a[1]);
   }
+  const savedSections: string[] = [];
+  if (!liveRepos) savedSections.push("repositories");
+  if (!Array.isArray(liveEvents)) savedSections.push("public activity");
+  if (!days.length) savedSections.push("contribution calendar");
+  if (languages === cachedLanguages) savedSections.push("languages");
   return {
-    repos, events, days: days.length >= 350 ? days : cachedDays, languages,
-    fallback: !liveRepos || !Array.isArray(liveEvents) || days.length < 350 || languages === cachedLanguages,
+    repos, events, days: days.length ? days : cachedDays, languages, savedSections,
+    fallback: savedSections.length > 0,
     snapshotDate: snapshot.capturedAt.slice(0, 10),
   };
 }
 
+const dateFormat = new Intl.DateTimeFormat("en", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
+
 export function dateLabel(date: string) {
-  return new Intl.DateTimeFormat("en", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" })
-    .format(new Date(date));
+  return dateFormat.format(new Date(date));
 }

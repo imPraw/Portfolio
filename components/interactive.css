@@ -1,0 +1,30 @@
+.nav-links a[aria-current="location"] {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: var(--accent);
+}
+
+.archive-summary {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  margin-top: .75rem;
+}
+
+.archive-summary .archive-count {
+  margin: 0;
+}
+
+.archive-reset {
+  color: var(--accent);
+  font-size: .875rem;
+  text-decoration: underline;
+  text-underline-offset: .2em;
+  min-height: 2.75rem;
+}
+
+.copy-wrap .copy-status:not(:empty) {
+  position: static;
+  display: block;
+  max-width: 24ch;
+  margin-top: .4rem;
+}

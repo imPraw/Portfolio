@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const config: NextConfig = {
   agentRules: false,
+  devIndicators: false,
   poweredByHeader: false,
   images: { formats: ["image/webp", "image/avif"] },
   async headers() {

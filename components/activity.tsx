@@ -2,6 +2,7 @@ import { GitFork, GitPullRequest } from "lucide-react";
 import { FaGithub } from "react-icons/fa6";
 import { person } from "@/lib/content";
 import { dateLabel, getGitHubData, type Day } from "@/lib/github";
+import "./activity.css";
 
 function Calendar({ days }: { days: Day[] }) {
   const offset = days.length ? new Date(`${days[0][0]}T00:00:00Z`).getUTCDay() : 0;
@@ -13,6 +14,7 @@ function Calendar({ days }: { days: Day[] }) {
   const months: { x: number; name: string }[] = [];
   const activeDays: { date: string; count: number; level: number; x: number; y: number }[] = [];
   const contributions = days.reduce((total, [, , count]) => total + count, 0);
+  const period = `${dateLabel(days[0][0])} – ${dateLabel(days[days.length - 1][0])}`;
 
   days.forEach(([date, level, count], i) => {
     const x = Math.floor((i + offset) / 7) * pitch;
@@ -27,10 +29,10 @@ function Calendar({ days }: { days: Day[] }) {
     <div className="calendar">
       <div className="panel-heading">
         <h3>Contribution calendar</h3>
-        <span className="label"><strong data-counter={contributions}>{contributions}</strong> contributions</span>
+        <span className="label"><strong>{contributions}</strong> {contributions === 1 ? "contribution" : "contributions"}</span>
       </div>
-      <div className="calendar-scroll" tabIndex={0} role="region" aria-label="Scrollable contribution calendar" data-lenis-prevent>
-        <svg className="calendar-grid" viewBox={`0 0 ${width} 116`} role="img" aria-label={`GitHub heatmap showing ${contributions} contributions in the past year`}>
+      <div className="calendar-scroll" tabIndex={0} role="region" aria-label="Scrollable contribution calendar">
+        <svg className="calendar-grid" viewBox={`0 0 ${width} 116`} role="img" aria-label={`GitHub contribution calendar, ${period}. ${contributions} contributions.`}>
           <defs>
             <pattern id="contribution-cells" patternUnits="userSpaceOnUse" y={18} width={pitch} height={pitch}>
               <rect className="calendar-cell" width={11} height={11} rx={2} />
@@ -49,7 +51,7 @@ function Calendar({ days }: { days: Day[] }) {
           ))}
         </svg>
       </div>
-      <div className="calendar-footer"><span>Past year · GitHub</span><span className="legend">Less {[0, 1, 2, 3, 4].map((level) => <i key={level} data-level={level} />)} More</span></div>
+      <div className="calendar-footer"><span>{period}</span><span className="legend">Less {[0, 1, 2, 3, 4].map((level) => <i key={level} data-level={level} />)} More</span></div>
       {activeDays.length > 0 && (
         <details className="calendar-text">
           <summary>Contribution dates</summary>
@@ -83,10 +85,12 @@ export function Activity({ data }: { data: Awaited<ReturnType<typeof getGitHubDa
       <div className="activity-grid">
         <Calendar days={data.days} />
         <div className="activity-panel">
-          <div className="panel-heading"><h3>Top languages</h3><span className="label">Repo bytes</span></div>
+          <div className="panel-heading"><h3>Top languages</h3><span className="label">By code volume</span></div>
+          {languageTotal === 0 && <p className="muted">No language data available.</p>}
           {data.languages.slice(0, 5).map(([language, bytes]) => {
-            const percent = Math.round(bytes * 100 / languageTotal);
-            return <div className="language-row" key={language}><span>{language}</span><meter min={0} max={100} value={percent} aria-label={language} /><span>{percent}%</span></div>;
+            const percent = languageTotal ? bytes * 100 / languageTotal : 0;
+            const label = percent > 0 && percent < 1 ? "<1%" : `${Math.round(percent)}%`;
+            return <div className="language-row" key={language}><span>{language}</span><meter min={0} max={100} value={percent} aria-label={language} aria-valuetext={label} /><span>{label}</span></div>;
           })}
         </div>
         <div className="activity-panel">
@@ -99,7 +103,7 @@ export function Activity({ data }: { data: Awaited<ReturnType<typeof getGitHubDa
           <a className="text-link" href={person.github}><FaGithub size={15} aria-hidden="true" /> View GitHub profile</a>
         </div>
       </div>
-      {data.fallback && <p className="data-note">Some GitHub data uses the saved snapshot from {dateLabel(data.snapshotDate)}.</p>}
+      {data.fallback && <p className="data-note">Showing saved GitHub data from {dateLabel(data.snapshotDate)} for {new Intl.ListFormat("en").format(data.savedSections)}.</p>}
     </section>
   );
 }

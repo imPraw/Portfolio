@@ -1,9 +1,20 @@
 import Image from "next/image";
 import { AudioLines, Braces, ChevronRight, FileText, GitBranch, LayoutGrid, Mail, Shield, Terminal, Users } from "lucide-react";
 import type { Project } from "@/lib/content";
+import "./project-art.css";
+
+const captions = {
+  agent: "Workflow illustration · Incoming mail moves through classification before a reply.",
+  insurance: "Dashboard illustration · A shared view of claim status.",
+  chess: "Board illustration · The white pawn moves from e2 to e3.",
+};
+
+const board = [
+  "    ♚   ", "♟♟♟♟♟♟♟♟", "        ", "        ",
+  "        ", "    ♙   ", "♙♙♙♙ ♙♙♙", "    ♔   ",
+];
 
 export function ProjectArt({ project }: { project: Project }) {
-  const isCapture = project.id === "glass";
   return (
     <figure className={`project-art ${project.id}-art`}>
       <div className="art-canvas">
@@ -11,7 +22,7 @@ export function ProjectArt({ project }: { project: Project }) {
           <div className="mock-window agent-window" aria-hidden="true">
             <div className="mock-titlebar"><Terminal size={15} /> inbox / workflow <span className="window-controls">···</span></div>
             <div className="agent-screen">
-              <div className="art-kicker"><GitBranch size={15} /> EMAIL WORKFLOW</div>
+              <div className="art-kicker"><GitBranch size={15} /> Email workflow</div>
               <div className="flow">
                 <div><Mail /><span>Receive</span></div>
                 <ChevronRight className="flow-arrow" />
@@ -29,7 +40,7 @@ export function ProjectArt({ project }: { project: Project }) {
             <div className="insurance-screen">
               <div className="mock-sidebar"><LayoutGrid /><FileText /><Users /></div>
               <div className="mock-dashboard">
-                <div className="art-kicker">MANAGEMENT DASHBOARD</div>
+                <div className="art-kicker">Policy administration</div>
                 <strong>Claims overview</strong>
                 <div className="mock-table">
                   <div><b>Claim</b><b>Status</b></div>
@@ -52,18 +63,17 @@ export function ProjectArt({ project }: { project: Project }) {
             <div className="mock-titlebar"><Terminal size={15} /> chess.py <span className="window-controls">···</span></div>
             <div className="chess-screen">
               <div className="mock-board">
-                {Array.from({ length: 64 }, (_, i) => {
-                  const piece = i === 4 ? "♚" : i < 16 && i >= 8 ? "♟" : i >= 48 && i < 56 ? "♙" : i === 60 ? "♔" : "";
-                  return <span key={i} className={(i + Math.floor(i / 8)) % 2 ? "tinted" : ""}>{piece}</span>;
-                })}
+                {board.map((rank, row) => Array.from(rank, (piece, column) => (
+                  <span key={`${row}-${column}`} className={(row + column) % 2 ? "tinted" : ""} data-move={column === 4 && (row === 5 || row === 6) ? true : undefined}>{piece}</span>
+                )))}
               </div>
-              <div className="chess-prompt"><span>$</span> python chess.py<br />White to move<br /><span>›</span> e2 e3</div>
+              <div className="chess-prompt"><span>$</span> python chess.py<br /><span>›</span> e2 e3<br />Black to move</div>
             </div>
           </div>
         )}
       </div>
       <figcaption>
-        {isCapture ? <>Style study using the project’s alternate stylesheet <span aria-hidden="true">·</span> <a href="/media/glasswave-source.jpg">Original capture</a></> : "Illustrative preview based on the source"}
+        {project.id === "glass" ? <>Style study using the project’s alternate stylesheet <span aria-hidden="true">·</span> <a href="/media/glasswave-source.jpg">Original capture</a></> : captions[project.id]}
       </figcaption>
     </figure>
   );

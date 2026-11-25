@@ -1,5 +1,5 @@
 import Image, { getImageProps } from "next/image";
-import { ArrowDown, ArrowUp, Globe, Mail, Star, Terminal } from "lucide-react";
+import { AudioLines, Blocks, Code2, Cpu, Globe, Mail, Star, Terminal } from "lucide-react";
 import { FaGithub, FaInstagram, FaLinkedin } from "react-icons/fa6";
 import { Activity } from "@/components/activity";
 import { ProjectArt } from "@/components/project-art";
@@ -11,7 +11,7 @@ import { getSiteUrl } from "@/lib/site-url";
 
 export const revalidate = 86400;
 
-const about = "I’m Pratyush Halwai, a computer science student in Nepal. I like taking a repetitive task or a messy process and figuring out what a little software could make simpler.";
+const indexIcons = { agent: Cpu, insurance: Blocks, glass: AudioLines, chess: Code2 };
 const heroImage = {
   alt: "Portrait of Praw overlooking a futuristic skyline during an eclipse",
   fill: true,
@@ -61,47 +61,36 @@ export default async function Home() {
       <MotionLoader />
       <main id="main">
         <section id="top" className="hero" aria-labelledby="hero-title">
-          <picture className="hero-visual" data-hero-art>
+          <picture className="hero-visual">
             <source media="(max-width: 640px)" type="image/avif" srcSet="/media/eclipse-mobile-small.avif 560w, /media/eclipse-mobile.avif 840w" sizes={mobileHeroSizes} />
             <source media="(max-width: 640px)" type="image/webp" srcSet="/media/eclipse-mobile-small.webp 560w, /media/eclipse-mobile.webp 840w" sizes={mobileHeroSizes} />
             <img {...heroDesktop} decoding="sync" />
           </picture>
           <div className="hero-shade" />
           <div className="shell hero-shell">
+            <div className="hero-mast"><span>Personal portfolio</span><span><Globe size={14} aria-hidden="true" /> Kathmandu, Nepal</span></div>
             <div className="hero-copy">
-              <p className="hero-eyebrow hero-enter"><i /> PRATYUSH HALWAI <span> / </span> NEPAL</p>
-              <h1 id="hero-title"><span className="hero-enter">Built with</span><span className="hero-enter hero-accent">curiosity.</span></h1>
-              <p className="hero-intro hero-enter">I’m Praw, a computer science student building practical automation and thoughtfully designed software.</p>
+              <p className="hero-eyebrow hero-enter">Computer science student</p>
+              <h1 id="hero-title"><span className="hero-enter">Pratyush</span><em className="hero-enter hero-accent">Halwai.</em></h1>
+              <p className="hero-intro hero-enter">I go by Praw. I build tools for everyday tasks, from sorting an inbox to playing a favorite track.</p>
               <div className="hero-actions hero-enter">
-                <a className="button primary" data-magnetic href="#work">Explore my work <ArrowDown size={16} aria-hidden="true" /></a>
+                <a className="button primary" href="#work">Explore my work</a>
                 <a className="button hero-secondary" href={person.github}><FaGithub size={17} aria-hidden="true" /> GitHub</a>
               </div>
             </div>
-            <a className="hero-scroll" href="#about"><ArrowDown size={16} aria-hidden="true" /> Scroll to explore</a>
-            <span className="hero-terminal" aria-hidden="true"><Terminal size={15} /> whoami <i /></span>
+            <nav className="project-index" aria-label="Featured project shortcuts">
+              {projects.map((project) => {
+                const Icon = indexIcons[project.id];
+                return <a key={project.id} href={`#${project.id}`}><Icon size={21} strokeWidth={1.5} aria-hidden="true" /><span>{project.name}</span></a>;
+              })}
+            </nav>
           </div>
-        </section>
-
-        <section className="section shell about" id="about" aria-labelledby="about-title">
-          <div className="about-copy">
-            <p className="label">About me</p>
-            <h2 id="about-title" data-reveal>Curious by default.</h2>
-            <p className="about-story">
-              <span className="sr-only">{about}</span>
-              <span data-word-story aria-hidden="true">{about.split(" ").map((word, i) => <span key={i}>{word} </span>)}</span>
-            </p>
-            <p className="muted">Lately, that has meant writing Python automation, building C# applications, and paying close attention to how the browser interfaces I make feel to use.</p>
-          </div>
-          <figure className="about-portrait">
-            <div><Image src="/media/portrait.webp" alt="A closer view of Praw in the eclipse portrait" width={750} height={941} sizes="(max-width: 760px) 80vw, 365px" data-portrait /></div>
-            <figcaption>Pratyush Halwai <span>@imPraw</span></figcaption>
-          </figure>
         </section>
 
         <section className="section shell work" id="work" aria-labelledby="work-title">
           <div className="section-head" data-reveal>
-            <p className="label">Selected work</p>
-            <h2 id="work-title">Things I’ve built.</h2>
+            <h2 id="work-title">Selected work.</h2>
+            <a className="text-link archive-jump" href="#more">Browse repository archive</a>
           </div>
           {projects.map((project) => {
             const repo = data.repos.find(({ name }) => name === project.repo);
@@ -110,15 +99,14 @@ export default async function Home() {
               <article className="project" id={project.id} key={project.id}>
                 <div className="project-detail">
                   <p className="label">{project.discipline}</p>
-                  <h3>{project.headline}</h3>
-                  <p className="project-name">{project.name}</p>
+                  <h3>{project.name}</h3>
                   <p className="muted">{project.problem}</p>
                   <p className="muted">{project.solution}</p>
                   <ul className="chips" aria-label="Technologies">{project.stack.map((tech) => <li key={tech}>{tech}</li>)}</ul>
                   <div className="project-actions">
                     {project.demoUrl && <a className="button primary" href={project.demoUrl}><Globe size={16} /> Live demo</a>}
-                    <a className="button secondary" href={url}><FaGithub size={16} aria-hidden="true" /> GitHub</a>
-                    {repo && <span className="repo-stat"><Star size={14} /> {repo.stars} {repo.stars === 1 ? "star" : "stars"}{repo.language && ` · ${repo.language}`}</span>}
+                    <a className="button secondary" href={url}><FaGithub size={16} aria-hidden="true" /> View repository</a>
+                    {!!repo?.stars && <span className="repo-stat"><Star size={14} /> {repo.stars} {repo.stars === 1 ? "star" : "stars"}</span>}
                   </div>
                   <details className="source">
                     <summary><Terminal size={15} /> View source excerpt</summary>
@@ -130,6 +118,21 @@ export default async function Home() {
               </article>
             );
           })}
+        </section>
+
+        <section className="section shell about" id="about" aria-labelledby="about-title">
+          <div className="about-copy">
+            <p className="label">Behind the work</p>
+            <h2 id="about-title" data-reveal>A little about me.</h2>
+            <p className="about-story">
+              I like taking a repetitive task or a messy process and figuring out what a little software could make simpler.
+            </p>
+            <p className="muted">Lately, that has meant writing Python automation, building C# applications, and paying close attention to how the browser interfaces I make feel to use.</p>
+          </div>
+          <figure className="about-portrait">
+            <div><Image src="/media/portrait.webp" alt="A closer view of Praw in the eclipse portrait" width={750} height={941} sizes="(max-width: 760px) 80vw, 365px" /></div>
+            <figcaption>Pratyush Halwai <span>@imPraw</span></figcaption>
+          </figure>
         </section>
 
         <section className="section shell" id="stack" aria-labelledby="stack-title">
@@ -161,7 +164,7 @@ export default async function Home() {
           </div>
         </section>
       </main>
-      <footer className="shell site-footer"><a href="#top" className="wordmark" aria-label="Praw, back to top">praw<span>.</span></a><span>Designed and built by me.</span><a className="text-link" href="#top">Back to top <ArrowUp size={15} aria-hidden="true" /></a></footer>
+      <footer className="shell site-footer"><a href="#top" className="wordmark" aria-label="Praw, back to top">praw<span>.</span></a><span>Designed and built by me.</span><a className="text-link" href="#top">Back to top</a></footer>
     </>
   );
 }

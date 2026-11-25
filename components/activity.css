@@ -1,0 +1,11 @@
+/* Narrow screens open the calendar at its most recent week. */
+.calendar .calendar-scroll { direction: rtl; }
+.calendar .calendar-grid { direction: ltr; }
+.calendar .calendar-footer { flex-wrap: wrap; gap: .5rem 1.25rem; }
+.activity-panel .language-row {
+  grid-template-columns: minmax(6.5rem, 1fr) minmax(2.5rem, 1.6fr) 3ch;
+  font-size: .8125rem;
+  font-variant-numeric: tabular-nums;
+}
+.activity-panel .language-row > :last-child { text-align: end; }
+.calendar .calendar-text summary { min-height: 44px; align-content: center; }

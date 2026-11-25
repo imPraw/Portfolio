@@ -2,10 +2,11 @@
 
 import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent } from "react";
 import dynamic from "next/dynamic";
-import { Check, Command, Copy, Layers, Mail, Moon, Search, Sun, UserRound, X } from "lucide-react";
+import { BriefcaseBusiness, Check, Copy, Layers, Mail, Moon, Search, Sun, UserRound, X } from "lucide-react";
 import { FaGithub } from "react-icons/fa6";
 import { archiveDescriptions, person, projects, sections, skillGroups } from "@/lib/content";
 import type { Repo } from "@/lib/github";
+import "./interactive.css";
 
 const recipient = encodeURIComponent(person.email);
 const gmailComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${recipient}`;
@@ -44,7 +45,7 @@ function openGmailApp(event: MouseEvent<HTMLAnchorElement>) {
 }
 
 export function EmailLink() {
-  return <a className="button primary" data-magnetic {...gmailLink} onClick={openGmailApp}>{person.email}</a>;
+  return <a className="button primary" {...gmailLink} onClick={openGmailApp} aria-label={`Compose in Gmail to ${person.email}`}><Mail size={16} aria-hidden="true" />{person.email}</a>;
 }
 
 const commands = [
@@ -55,8 +56,8 @@ const commands = [
 ];
 const SkillMotion = dynamic(() => import("./skill-motion"), { ssr: false });
 const primaryLinks = [
+  { href: "#work", label: "Work", icon: BriefcaseBusiness },
   { href: "#about", label: "About", icon: UserRound },
-  { href: "#work", label: "Work", icon: Copy },
   { href: "#stack", label: "Stack", icon: Layers },
   { href: "#contact", label: "Contact", icon: Mail },
 ];
@@ -65,6 +66,8 @@ export function Controls() {
   const [light, setLight] = useState(false);
   const [query, setQuery] = useState("");
   const [active, setActive] = useState(0);
+  const [section, setSection] = useState("");
+  const [modifier, setModifier] = useState("Ctrl");
   const dialog = useRef<HTMLDialogElement>(null);
   const input = useRef<HTMLInputElement>(null);
   const opener = useRef<HTMLElement | null>(null);
@@ -81,6 +84,20 @@ export function Controls() {
 
   useEffect(() => {
     setLight(document.documentElement.dataset.theme === "light");
+    if (/Mac|iPhone|iPad|iPod/.test(navigator.platform)) setModifier("⌘");
+    let observer: IntersectionObserver;
+    function observeSections() {
+      observer?.disconnect();
+      const marker = Math.round(window.innerHeight * .22);
+      observer = new IntersectionObserver((entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) setSection(`#${entry.target.id}`);
+        }
+      }, { rootMargin: `-${marker}px 0px -${window.innerHeight - marker - 1}px 0px` });
+      document.querySelectorAll("main section[id]").forEach((element) => observer.observe(element));
+    }
+    observeSections();
+    window.addEventListener("resize", observeSections);
     function shortcut(event: globalThis.KeyboardEvent) {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
@@ -88,7 +105,11 @@ export function Controls() {
       }
     }
     window.addEventListener("keydown", shortcut);
-    return () => window.removeEventListener("keydown", shortcut);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", observeSections);
+      window.removeEventListener("keydown", shortcut);
+    };
   }, []);
 
   function toggleTheme() {
@@ -120,12 +141,12 @@ export function Controls() {
           <a className="wordmark" href="#top" aria-label="Praw, home">praw<span>.</span></a>
           <div className="nav-links">
             {primaryLinks.map(({ href, label, icon: Icon }) => (
-              <a key={href} href={href} aria-label={label} title={label}><Icon size={18} aria-hidden="true" /><span>{label}</span></a>
+              <a key={href} href={href} aria-current={section === href ? "location" : undefined} aria-label={label} title={label}><Icon size={18} aria-hidden="true" /><span>{label}</span></a>
             ))}
           </div>
           <div className="nav-actions">
             <button className="icon-button palette-trigger" type="button" onClick={openPalette} aria-label="Open command palette" aria-keyshortcuts="Control+k Meta+k" title="Command palette">
-              <Search size={17} /><kbd><Command size={12} /> K</kbd>
+              <Search size={17} /><kbd aria-hidden="true">{modifier} K</kbd>
             </button>
             <button className="icon-button" type="button" aria-pressed={light} aria-label="Light theme" title="Toggle light theme" onClick={toggleTheme}>
               <Sun className="sun-icon" size={18} /><Moon className="moon-icon" size={18} />
@@ -138,13 +159,13 @@ export function Controls() {
           <h2 id="palette-title" className="sr-only">Command palette</h2>
           <div className="palette-input">
             <Search size={19} aria-hidden="true" />
-            <input ref={input} aria-label="Search destinations" placeholder="Go to a section or project…" value={query} onChange={(event) => { setQuery(event.target.value); setActive(0); }} onKeyDown={onKeyboard} />
+            <input ref={input} role="combobox" aria-expanded="true" aria-autocomplete="list" aria-controls="command-results" aria-activedescendant={commandList.length ? `command-${active}` : undefined} aria-label="Search destinations" placeholder="Go to a section or project…" value={query} onChange={(event) => { setQuery(event.target.value); setActive(0); }} onKeyDown={onKeyboard} />
             <button className="icon-button" aria-label="Close command palette" onClick={() => dialog.current?.close()}><X size={18} /></button>
           </div>
-          <ul className="palette-results" data-lenis-prevent>
+          <ul id="command-results" role="listbox" aria-label="Destinations" className="palette-results">
             {commandList.map((command, index) => (
-              <li key={command.href}>
-                <a id={`command-${index}`} className={index === active ? "active" : ""} href={command.href} {...(command.href === gmailComposeUrl ? gmailLink : {})} onClick={(event) => {
+              <li key={command.href} role="presentation">
+                <a id={`command-${index}`} role="option" aria-selected={active === index} tabIndex={-1} onPointerMove={() => setActive(index)} className={index === active ? "active" : ""} href={command.href} {...(command.href === gmailComposeUrl ? gmailLink : {})} onClick={(event) => {
                   if (!command.href.startsWith("#")) {
                     dialog.current?.close();
                     if (command.href === gmailComposeUrl) openGmailApp(event);
@@ -179,7 +200,10 @@ export function SkillExplorer() {
       <div className="skill-tabs" role="tablist" aria-label="Skill categories" aria-orientation="vertical">
         {skillGroups.map(({ name }, index) => (
           <button key={name} id={`skill-${index}`} role="tab" type="button" aria-selected={selected === index} aria-controls="skill-panel" tabIndex={selected === index ? 0 : -1} onClick={() => setSelected(index)} onKeyDown={(event) => {
-            const next = { ArrowDown: (index + 1) % skillGroups.length, ArrowUp: (index + skillGroups.length - 1) % skillGroups.length, Home: 0, End: skillGroups.length - 1 }[event.key];
+            const columns = window.getComputedStyle(event.currentTarget.parentElement!).gridTemplateColumns;
+            const stride = columns === "none" ? 1 : columns.split(" ").length;
+            const total = skillGroups.length;
+            const next = { ArrowDown: (index + stride) % total, ArrowUp: (index + total - stride) % total, ArrowRight: (index + 1) % total, ArrowLeft: (index + total - 1) % total, Home: 0, End: total - 1 }[event.key];
             if (next === undefined) return;
             event.preventDefault();
             setSelected(next);
@@ -203,6 +227,7 @@ export function RepositoryArchive({ repos }: { repos: Repo[] }) {
   const [search, setSearch] = useState("");
   const [language, setLanguage] = useState("");
   const [topic, setTopic] = useState("");
+  const searchField = useRef<HTMLInputElement>(null);
   const languages = [...new Set(repos.flatMap((repo) => repo.language ?? []))].sort();
   const topics = [...new Set(repos.flatMap((repo) => repo.topics))].sort();
   const filtered = repos.filter((repo) =>
@@ -215,7 +240,7 @@ export function RepositoryArchive({ repos }: { repos: Repo[] }) {
   return (
     <>
       <div className="archive-controls">
-        <label className="archive-search"><Search size={18} aria-hidden="true" /><input aria-label="Search repositories" placeholder="Search repositories" value={search} onChange={(event) => setSearch(event.target.value)} /></label>
+        <label className="archive-search"><Search size={18} aria-hidden="true" /><input ref={searchField} type="search" aria-label="Search repositories" placeholder="Search repositories" value={search} onChange={(event) => setSearch(event.target.value)} /></label>
         <select aria-label="Filter by language" value={language} onChange={(event) => setLanguage(event.target.value)}>
           <option value="">All languages</option>
           {languages.map((name) => <option key={name}>{name}</option>)}
@@ -225,7 +250,15 @@ export function RepositoryArchive({ repos }: { repos: Repo[] }) {
           {topics.map((name) => <option key={name}>{name}</option>)}
         </select>}
       </div>
-      <p className="archive-count" role="status">{filtered.length} {filtered.length === 1 ? "repository" : "repositories"}</p>
+      <div className="archive-summary">
+        <p className="archive-count" role="status">{filtered.length} {filtered.length === 1 ? "repository" : "repositories"}</p>
+        {(search || language || topic) && <button type="button" className="archive-reset" onClick={() => {
+          setSearch("");
+          setLanguage("");
+          setTopic("");
+          searchField.current?.focus();
+        }}>Clear filters</button>}
+      </div>
       <ul className="archive-grid">
         {filtered.map((repo) => (
           <li key={repo.name}>
@@ -261,7 +294,7 @@ export function CopyEmail() {
   return (
     <div className="copy-wrap">
       <button className="button secondary copy" type="button" onClick={copy}>{message === "Email copied" ? <Check size={16} /> : <Copy size={16} />} {message === "Email copied" ? "Copied" : "Copy email"}</button>
-      <span className="copy-status" role="status">{message}</span>
+      <span className={message === "Email copied" ? "sr-only" : "copy-status"} role="status">{message}</span>
     </div>
   );
 }
